@@ -869,6 +869,15 @@ func (tree *MutableTree) SetInitialVersion(version uint64) {
 	tree.ndb.opts.InitialVersion = version
 }
 
+// DeleteVersionsFrom removes from the given version upwards from the MutableTree.
+// It will not block the SaveVersion() call, instead it will be queued and executed deferred.
+func (tree *MutableTree) DeleteVersionsFrom(fromVersion int64) error {
+	if err := tree.ndb.DeleteVersionsFrom(fromVersion); err != nil {
+		return err
+	}
+	return tree.ndb.Commit()
+}
+
 // DeleteVersionsTo removes versions upto the given version from the MutableTree.
 // It will not block the SaveVersion() call, instead it will be queued and executed deferred.
 func (tree *MutableTree) DeleteVersionsTo(toVersion int64) error {
